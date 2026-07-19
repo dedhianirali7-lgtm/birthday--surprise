@@ -1,0 +1,221 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Happy Birthday Piu! 🎂</title>
+    <style>
+        * { box-sizing: border-box; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; margin: 0; padding: 0; }
+        body { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: #4a4a4a; display: flex; justify-content: center; align-items: center; min-height: 100vh; overflow-x: hidden; }
+        .card-container { background: white; border-radius: 20px; box-shadow: 0 10px 40px rgba(0,0,0,0.2); width: 90%; max-width: 500px; padding: 40px; text-align: center; position: relative; min-height: 450px; display: flex; flex-direction: column; justify-content: center; align-items: center; border: 4px solid #ff6b9d; }
+        .screen { display: none; width: 100%; animation: fadeIn 0.5s ease-in-out forwards; }
+        .screen.active { display: flex; flex-direction: column; align-items: center; justify-content: center; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        @keyframes float { 0%, 100% { transform: translateY(0px); } 50% { transform: translateY(-20px); } }
+        
+        h2 { color: #ff6b9d; margin-bottom: 20px; font-size: 28px; font-weight: bold; }
+        h1 { color: #667eea; font-size: 42px; margin-bottom: 10px; }
+        p { font-size: 16px; line-height: 1.6; margin-bottom: 20px; color: #6c757d; }
+        
+        /* Inputs & Buttons */
+        input[type="password"] { width: 85%; padding: 14px; border: 2px solid #ff6b9d; border-radius: 30px; text-align: center; font-size: 18px; margin-bottom: 15px; outline: none; transition: 0.3s; font-weight: bold; }
+        input[type="password"]:focus { border-color: #667eea; box-shadow: 0 0 15px rgba(102, 126, 234, 0.3); }
+        button { background: linear-gradient(135deg, #ff6b9d 0%, #ffa500 100%); color: white; border: none; padding: 14px 35px; font-size: 16px; font-weight: bold; border-radius: 30px; cursor: pointer; transition: 0.3s; box-shadow: 0 6px 20px rgba(255, 107, 157, 0.4); }
+        button:hover { transform: scale(1.08); box-shadow: 0 8px 25px rgba(255, 107, 157, 0.6); }
+        
+        /* Button Game Grid */
+        .btn-group { display: flex; gap: 20px; margin-top: 25px; width: 100%; justify-content: center; position: relative; height: 60px; }
+        .funny-gif { width: 180px; height: 180px; object-fit: cover; border-radius: 20px; margin-bottom: 20px; border: 4px solid #ff6b9d; animation: float 3s ease-in-out infinite; }
+        
+        /* Envelope Animation */
+        .envelope-wrapper { cursor: pointer; margin: 20px 0; transition: 0.3s; }
+        .envelope-wrapper:hover { transform: scale(1.08); }
+        .envelope-wrapper img { animation: float 3s ease-in-out infinite; }
+        .letter { background: linear-gradient(135deg, #fff0f3 0%, #ffe0ec 100%); padding: 25px; border-radius: 15px; border-left: 6px solid #ff6b9d; text-align: center; font-size: 16px; line-height: 1.8; display: none; box-shadow: 0 8px 20px rgba(255, 107, 157, 0.2); max-height: 350px; overflow-y: auto; }
+        .letter p { color: #333; margin-bottom: 10px; }
+        
+        /* Photo Grid */
+        .photo-gallery { display: grid; grid-template-columns: repeat(2, 1fr); gap: 15px; margin: 20px 0; width: 100%; max-height: 400px; overflow-y: auto; }
+        .polaroid { background: white; padding: 10px 10px 25px 10px; box-shadow: 0 6px 15px rgba(0,0,0,0.15); transform: rotate(-4deg); border: 2px solid #ddd; transition: 0.3s; }
+        .polaroid:nth-child(even) { transform: rotate(4deg); }
+        .polaroid:hover { transform: rotate(0deg) scale(1.05); }
+        .polaroid img { width: 100%; height: 140px; object-fit: cover; border-radius: 8px; }
+        .photo-label { font-size: 12px; color: #999; margin-top: 8px; font-style: italic; }
+        
+        /* Final Hug Screen */
+        .hug-container { display: flex; gap: 20px; justify-content: center; align-items: flex-end; margin: 30px 0; }
+        .teddy { width: 120px; height: 140px; animation: float 3s ease-in-out infinite; }
+        .teddy-center { width: 150px; height: 180px; animation: float 3s ease-in-out infinite 0.2s; }
+        
+        .celebration-text { font-size: 20px; font-weight: bold; color: #ff6b9d; margin: 20px 0; }
+        
+        .error-msg { color: #ff6b9d; font-weight: bold; margin-top: 10px; }
+        
+        .scrollbar-style::-webkit-scrollbar { width: 6px; }
+        .scrollbar-style::-webkit-scrollbar-track { background: #f1f1f1; border-radius: 10px; }
+        .scrollbar-style::-webkit-scrollbar-thumb { background: #ff6b9d; border-radius: 10px; }
+        .scrollbar-style::-webkit-scrollbar-thumb:hover { background: #d63384; }
+    </style>
+</head>
+<body>
+
+<div class="card-container">
+
+    <!-- SCREEN 1: Password Lock -->
+    <div id="screen-lock" class="screen active">
+        <h2>🔒 Top Secret Access</h2>
+        <p>Only for the BIRTHDAY GIRL! 🎂<br>Enter your birth date to unlock (DDMMYYYY):</p>
+        <input type="password" id="password-input" placeholder="Hint: Your Birthday!">
+        <button onclick="checkPassword()">Unlock Surprise 🎉</button>
+        <div id="error-msg" class="error-msg"></div>
+    </div>
+
+    <!-- SCREEN 2: The Interactive Question -->
+    <div id="screen-question" class="screen">
+        <img id="question-gif" class="funny-gif" src="https://media.giphy.com/media/v1.Y2lkPTc5MGI3NjExM3BndjZ4d3B5c2V5cW94M21kYnhtdm55anBqdTh5amMxODd5cmN1dSZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9cw/cKKX0w5ZIdzoEE6O2Z/giphy.gif" alt="Cute celebration">
+        <h2 id="question-text">Hey Piu!! 🎉<br>I made something special for you...<br>Do you want to see?</h2>
+        <div class="btn-group">
+            <button id="yes-btn" onclick="nextScreen('screen-letter')">YES! 💖</button>
+            <button id="no-btn" onmouseover="moveNoButton()" onclick="handleNoClick()">No</button>
+        </div>
+    </div>
+
+    <!-- SCREEN 3: The Virtual Letter -->
+    <div id="screen-letter" class="screen">
+        <h2>💌 A Message for You</h2>
+        <div class="envelope-wrapper" id="envelope" onclick="openLetter()">
+            <img src="https://media.giphy.com/media/v1.Y2lkPTc5MGI3NjExOHBhOHM2Zms1czV4OHFqOHpxb21td3pwNHQxOHM2YnM4amJ5dGd3diZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9cw/ZgG7831P6Q29n634q7/giphy.gif" width="130" alt="Envelope">
+            <p style="font-size: 14px; color:#ff6b9d; margin-top: 10px; font-weight: bold;">✨ Tap envelope to open ✨</p>
+        </div>
+        <div class="letter scrollbar-style" id="secret-letter">
+            <p><strong>Hii Piuuu! ✨</strong></p>
+            <p><strong>Happyyy birthdayyy gurlll! 🎂🥳</strong></p>
+            <p>Zyada kuch bolne ko to hai nahi, because our love for you is infinite na! 💖</p>
+            <p>Wese to sirf 3-4 saal hi hue hain sath me, but look at us, we love you so damn much.</p>
+            <p>Tere jesi sukdi bombil hume aaj tak koi nahi mili, and honestly, we just love it when you smile! 🥰</p>
+            <p><em>(Btw, Nirali wanted me to remind you: "wese to lamba hoke kuch ukada nahi hai tune thike na" 😂)</em></p>
+            <p><strong>We loveeee uuuuu so much! Kissiu kisssu, have the best day ever! 💋🎉</strong></p>
+            <button style="margin-top:20px; width:100%;" onclick="nextScreen('screen-gallery')">Next Surprise ✨</button>
+        </div>
+    </div>
+
+    <!-- SCREEN 4: Polaroid Gallery -->
+    <div id="screen-gallery" class="screen">
+        <h2>📸 Memory Lane with Piu 💕</h2>
+        <p>Moments we cherish with you! 🌟</p>
+        <div class="photo-gallery scrollbar-style">
+            <!-- Your special trio photos -->
+            <div class="polaroid">
+                <img src="https://images.unsplash.com/photo-1529156069898-49953e39b3ac?w=300&h=300&fit=crop" alt="Trio fun moment">
+                <div class="photo-label">Our Trio! 💕</div>
+            </div>
+            <div class="polaroid">
+                <img src="https://images.unsplash.com/photo-1511632765486-a01980e01a18?w=300&h=300&fit=crop" alt="Beach memories">
+                <div class="photo-label">Beach Vibes! 🏖️</div>
+            </div>
+            <div class="polaroid">
+                <img src="https://images.unsplash.com/photo-1529156069898-49953e39b3ac?w=300&h=300&fit=crop" alt="Fun selfies">
+                <div class="photo-label">Fun Times! 😂</div>
+            </div>
+            <div class="polaroid">
+                <img src="https://images.unsplash.com/photo-1511632765486-a01980e01a18?w=300&h=300&fit=crop" alt="Special moments">
+                <div class="photo-label">You're Special! ✨</div>
+            </div>
+            <div class="polaroid">
+                <img src="https://images.unsplash.com/photo-1529156069898-49953e39b3ac?w=300&h=300&fit=crop" alt="Candid shots">
+                <div class="photo-label">Candid Moments! 📸</div>
+            </div>
+            <div class="polaroid">
+                <img src="https://images.unsplash.com/photo-1511632765486-a01980e01a18?w=300&h=300&fit=crop" alt="Forever memories">
+                <div class="photo-label">Forever! 💞</div>
+            </div>
+        </div>
+        <p style="font-size: 13px; color: #999; margin-top: 15px;">💝 Replace these with your actual photos of you & Piu 💝</p>
+        <button style="margin-top: 20px;" onclick="nextScreen('screen-hug')">Final Surprise 🎁🧸</button>
+    </div>
+
+    <!-- SCREEN 5: Virtual Hug with Teddies -->
+    <div id="screen-hug" class="screen">
+        <h1>🎉 Happy Birthday, Piu! 🎉</h1>
+        <p style="font-size: 18px; color: #ff6b9d; font-weight: bold; margin-bottom: 30px;">Here's a special hug just for you!</p>
+        
+        <div class="hug-container">
+            <img class="teddy" src="https://media.giphy.com/media/v1.Y2lkPTc5MGI3NjExOHY5ZzZ2ZHJkZXR2ODd2dms5bnBmcms5cWF6Nms4dnN4NDB2a29xayZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9cw/kL1SS9LekR08E/giphy.gif" alt="Teddy 1">
+            <img class="teddy-center" src="https://media.giphy.com/media/v1.Y2lkPTc5MGI3NjExM29xd3B5M3Bjcms5ZmpxbnoxYmF5OWI2Znd2czR1cG9xdjV3c2Z2OCZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9cw/9rO5Aksmnm++Z14Ok9/giphy.gif" alt="Birthday Girl Teddy">
+            <img class="teddy" src="https://media.giphy.com/media/v1.Y2lkPTc5MGI3NjExOHY5ZzZ2ZHJkZXR2ODd2dms5bnBmcms5cWF6Nms4dnN4NDB2a29xayZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9cw/kL1SS9LekR08E/giphy.gif" alt="Teddy 2">
+        </div>
+        
+        <div class="celebration-text">
+            <p>💖 TWO TEDDY BEARS HUGGING YOU! 💖</p>
+            <p style="font-size: 24px; margin-top: 15px;">With ALL our love! 🎂✨🥳</p>
+        </div>
+        
+        <p style="margin-top: 30px; font-size: 18px; color: #667eea; font-weight: bold;">You deserve the BEST day ever! 🌟</p>
+        <p style="margin-top: 15px; font-size: 16px; color: #ff6b9d;">Forever & Always, Your Besties! 👯‍♀️💕</p>
+    </div>
+
+</div>
+
+<script>
+    // 1. Password Verification
+    function checkPassword() {
+        const passwordInput = document.getElementById('password-input').value;
+        const errorMsg = document.getElementById('error-msg');
+        
+        // Set password for Piu's birthday (21072007)
+        if(passwordInput === '21072007' || passwordInput.toLowerCase() === 'piu' || passwordInput.toLowerCase() === 'piona') {
+            errorMsg.textContent = '';
+            nextScreen('screen-question');
+        } else {
+            errorMsg.textContent = '❌ Wrong code! Try again! (Hint: 21072007 or Piu)';
+        }
+    }
+
+    // Allow Enter key to submit password
+    document.addEventListener('DOMContentLoaded', function() {
+        document.getElementById('password-input').addEventListener('keypress', function(e) {
+            if(e.key === 'Enter') checkPassword();
+        });
+    });
+
+    // 2. Navigation Control
+    function nextScreen(screenId) {
+        document.querySelectorAll('.screen').forEach(screen => screen.classList.remove('active'));
+        document.getElementById(screenId).classList.add('active');
+    }
+
+    // 3. The Elusive "No" Button Strategy
+    let noClickCount = 0;
+    function moveNoButton() {
+        const noBtn = document.getElementById('no-btn');
+        const x = Math.random() * 180 - 90;
+        const y = Math.random() * 100 - 50;
+        noBtn.style.transform = `translate(${x}px, ${y}px)`;
+    }
+
+    function handleNoClick() {
+        noClickCount++;
+        const gif = document.getElementById('question-gif');
+        const heading = document.getElementById('question-text');
+        
+        if(noClickCount === 1) {
+            heading.innerHTML = "How dare you! 😤 Try again, Piu!";
+            gif.src = "https://media.giphy.com/media/v1.Y2lkPTc5MGI3NjExOHY5ZzZ2ZHJkZXR2ODd2dms5bnBmcms5cWF6Nms4dnN4NDB2a29xayZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9cw/kL1SS9LekR08E/giphy.gif";
+        } else if(noClickCount === 2) {
+            heading.innerHTML = "Accha fine! No more trying 😒";
+        } else if(noClickCount >= 3) {
+            heading.innerHTML = "Okay fine, you have NO choice! 😉💖";
+            document.getElementById('no-btn').style.display = 'none';
+            setTimeout(() => nextScreen('screen-letter'), 2000);
+        }
+    }
+
+    // 4. Letter Interaction
+    function openLetter() {
+        document.getElementById('envelope').style.display = 'none';
+        document.getElementById('secret-letter').style.display = 'block';
+    }
+</script>
+
+</body>
+</html>
